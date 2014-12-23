@@ -46,6 +46,25 @@ namespace PaynearmeCallbacks
                     }
                     else
                     {
+                        /**
+                        *  InvalidSignatureException
+                        *   Invalid Signature is a special case of exception that throws an HTTP Error.  With the
+                        *   exception of Invalid Signature and Internal Server errors, it is expected that the callback
+                        *   response be properly formatted XML per the PayNearMe specification.
+                        *
+                        *   This is a security exception and may highlight a configuration problem (wrong secret or
+                        *   siteIdentifier) OR it may highlight a possible payment injection from a source other than
+                        *   PayNearMe.  You may choose to notify your IT department when this error class is raised.
+                        *   PayNearMe strongly recommends that your callback listeners be whitelisted to ONLY allow
+                        *   traffic from PayNearMe IP addresses.
+                        *
+                        *   When this class of error is raised in a production environment you may choose to not respond
+                        *   to PayNearMe, which will trigger a timeout exception, leading to PayNearMe to retry the
+                        *   callbacks up to 40 times.  If the error persists, callbacks will be suspended.
+                        *
+                        *   In development environment this default message will aid with debugging.
+                        */
+
                         logger.Warn("Invalid signature for /confirm");
                         logger.Warn("  Got: " + context.Request.QueryString["signature"] + ", expected: " + signature);
                         throw new RequestException("Invalid signature for /confirm", 400);
@@ -58,6 +77,19 @@ namespace PaynearmeCallbacks
             }
             catch (RequestException e)
             {
+                /**
+                * Internal Server Error
+                *  Internal Server Error is a special case of exception that throws an HTTP Error.  With the exception
+                *  of Invalid Signature and Internal Server errors, it is expected that the callback response be
+                *  properly formatted XML per the PayNearMe specification.
+                *
+                *  When this class of error is raised in a production environment you may choose to not respond to
+                *  PayNearMe, which will trigger a timeout exception, leading to PayNearMe to retry the callbacks up
+                *  to 40 times.  If the error persists, callbacks will be suspended.
+                *
+                *  This error may highlight a server outage in your infrastructure. You may choose to notify your IT
+                *  department when this error class is raised.
+                */
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = e.StatusCode;
                 context.Response.Output.WriteLine(e.Message);
