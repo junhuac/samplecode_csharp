@@ -91,8 +91,9 @@ namespace PaynearmeCallbacks
             logger.Info("Response sent for pnm_order_identifier: " + pnmOrderIdentifier + ", site_order_identifier: " + identifier);
 
             /* Now that you have responded to a /confirm, you need to keep a record
-               of this pnm_order_identifier and DO NOT respond to any other
-               /confirm requests for that pnm_order_identifier.
+               of this pnm_payment_identifier and DO NOT POST any other /confirm 
+               requests for that pnm_payment_identifier, however you  should still
+               respond to all confirm requests, even duplicates.
             */
 
             response.ContentType = "application/xml";
